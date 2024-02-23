@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794864045127",
+    "project_id": "tadatodo-1205",
+    "storage_bucket": "tadatodo-1205.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794864045127:android:ac50f0dfcd0f91abd13562",
+        "android_client_info": {
+          "package_name": "com.example.tadatodo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_AQAjgYSTIzrtWxAS07wtWLeiP9sBpQk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
