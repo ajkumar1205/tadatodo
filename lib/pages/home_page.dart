@@ -8,12 +8,22 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: appBar(),
-      body: GridView(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 3,
-        ),
-      ),
+      body: ListView.builder(
+          itemCount: 5,
+          itemBuilder: (context, index) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              height: 200,
+              decoration: BoxDecoration(
+                color: bColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width - 150),
+            );
+          }),
       floatingActionButtonLocation: FabLocation(context: context),
       floatingActionButton: FloatingActionButton(
         backgroundColor: pColor,
