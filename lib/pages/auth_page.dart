@@ -11,62 +11,63 @@ class AuthPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final email = TextEditingController();
     final pass = TextEditingController();
-    return BlocProvider(
-      create: (context) => AuthCubit(),
-      child: BlocConsumer<AuthCubit, AuthState>(
-          listener: (context, state) => {
-                if (state is ErrorAuthState)
-                  {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.red,
-                        showCloseIcon: true,
-                        content: Text(
-                          state.error,
-                          style: const TextStyle(color: white),
-                        ),
-                      ),
-                    )
-                  }
-                else if (state is AuthorizedState)
-                  {Navigator.of(context).pushReplacementNamed("/home")}
-              },
-          builder: (context, state) {
-            return Scaffold(
-              backgroundColor: Colors.white,
-              body: Center(
-                child: SizedBox(
-                  width: 270,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Input(controller: email),
-                      const SizedBox(height: 10),
-                      Input(controller: pass),
-                      const SizedBox(height: 6),
-                      state is ProcessingAuthState
-                          ? const LinearProgressIndicator(color: pColor)
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SignUp(onTap: () async {
-                                  await BlocProvider.of<AuthCubit>(context)
-                                      .signUp(email.text, pass.text);
-                                }),
-                                Login(
-                                  onTap: () async {
-                                    await BlocProvider.of<AuthCubit>(context)
-                                        .login(email.text, pass.text);
-                                  },
-                                ),
-                              ],
-                            ),
-                    ],
-                  ),
-                ),
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is ErrorAuthState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red,
+              showCloseIcon: true,
+              content: Text(
+                state.error,
+                style: const TextStyle(color: white),
               ),
-            );
-          }),
+            ),
+          );
+        } else if (state is AuthorizedState) {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pushReplacementNamed("/home");
+          } else {
+            Navigator.of(context).pushNamed("/home");
+          }
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: SizedBox(
+              width: 270,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Input(controller: email),
+                  const SizedBox(height: 10),
+                  Input(controller: pass),
+                  const SizedBox(height: 6),
+                  state is ProcessingAuthState
+                      ? const LinearProgressIndicator(color: pColor)
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SignUp(onTap: () async {
+                              await BlocProvider.of<AuthCubit>(context)
+                                  .signUp(email.text, pass.text);
+                            }),
+                            Login(
+                              onTap: () async {
+                                await BlocProvider.of<AuthCubit>(context)
+                                    .login(email.text, pass.text);
+                              },
+                            ),
+                          ],
+                        ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -151,7 +152,7 @@ class Input extends StatelessWidget {
         textAlign: TextAlign.center,
         style: const TextStyle(
           fontSize: 20,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,

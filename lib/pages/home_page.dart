@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../theme/colors.dart';
+import '../provider/auth/auth_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,7 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: appBar(),
+      appBar: appBar(context),
       body: ListView.builder(
           itemCount: 5,
           itemBuilder: (context, index) {
@@ -36,7 +38,63 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  PreferredSize appBar() {
+  Future<Widget?> openDialog(BuildContext context) {
+    return showDialog<Widget>(
+      context: context,
+      useRootNavigator: true,
+      builder: (context) => BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is ErrorAuthState) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushReplacementNamed("/auth");
+          }
+        },
+        child: Dialog(
+          backgroundColor: bColor,
+          child: SizedBox(
+            width: 300,
+            height: 210,
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                const CircleAvatar(
+                  backgroundColor: pColor,
+                  foregroundColor: white,
+                  radius: 50,
+                  child: Text("A", style: TextStyle(fontSize: 40)),
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    "ajthakur1205@gmail.com",
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () async {
+                        await BlocProvider.of<AuthCubit>(context).signOut();
+                      },
+                      child: const Text("Sign Out"),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text("Close"),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PreferredSize appBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(60),
       child: Container(
@@ -63,7 +121,9 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                await openDialog(context);
+              },
               style: const ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(pColor),
                 shape: MaterialStatePropertyAll(

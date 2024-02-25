@@ -16,9 +16,8 @@ class AuthCubit extends Cubit<AuthState> {
     final pass = p.trim();
     try {
       emit(ProcessingAuthState());
-      final user = await ins.createUserWithEmailAndPassword(
-          email: email, password: pass);
-      emit(AuthorizedState(user));
+      await ins.createUserWithEmailAndPassword(email: email, password: pass);
+      emit(AuthorizedState());
     } on FirebaseAuthException catch (e) {
       emit(ErrorAuthState(e.code));
     }
@@ -34,9 +33,8 @@ class AuthCubit extends Cubit<AuthState> {
     final pass = p.trim();
     try {
       emit(ProcessingAuthState());
-      final user =
-          await ins.signInWithEmailAndPassword(email: email, password: pass);
-      emit(AuthorizedState(user));
+      await ins.signInWithEmailAndPassword(email: email, password: pass);
+      emit(AuthorizedState());
     } on FirebaseAuthException catch (e) {
       emit(ErrorAuthState(e.code));
     }
@@ -47,5 +45,6 @@ class AuthCubit extends Cubit<AuthState> {
     if (ins.currentUser != null) {
       await ins.signOut();
     }
+    emit(ErrorAuthState("You have logged out"));
   }
 }
