@@ -9,6 +9,7 @@ import './pages/auth_page.dart';
 import './pages/home_page.dart';
 import './pages/edit_page.dart';
 import './provider/auth/auth_cubit.dart';
+import './provider/notes/notes_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        BlocProvider<NoteCubit>(create: (create) => NoteCubit()),
       ],
       child: MaterialApp(
         title: 'Tada Todo',

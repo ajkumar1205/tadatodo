@@ -3,38 +3,47 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../theme/colors.dart';
 import '../provider/auth/auth_cubit.dart';
+import '../provider/notes/notes_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: appBar(context),
-      body: ListView.builder(
-          itemCount: 5,
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              height: 200,
-              decoration: BoxDecoration(
-                color: bColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width - 150),
-            );
-          }),
-      floatingActionButtonLocation: FabLocation(context: context),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: pColor,
-        foregroundColor: white,
-        onPressed: () {
-          Navigator.of(context).pushNamed("/edit");
-        },
-        child: const Icon(Icons.add),
-      ),
+    return BlocConsumer<NoteCubit, NoteState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: appBar(context),
+          body: FutureBuilder(
+            future: BlocProvider.of<NoteCubit>(context).getNotes(),
+            builder: (context, snap) {
+              return ListView.builder(
+                itemCount: 1,
+                itemBuilder: (context, index) {
+                  return Row(
+                    children: [
+                      if (index % 2 == 1) const Expanded(child: SizedBox()),
+                      const NoteCard(),
+                      if (index % 2 == 0) const Expanded(child: SizedBox()),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          floatingActionButtonLocation: FabLocation(context: context),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: pColor,
+            foregroundColor: white,
+            onPressed: () {
+              Navigator.of(context).pushNamed("/edit");
+            },
+            child: const Icon(Icons.add),
+          ),
+        );
+      },
     );
   }
 
@@ -81,7 +90,9 @@ class HomePage extends StatelessWidget {
                       child: const Text("Sign Out"),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                       child: const Text("Close"),
                     )
                   ],
@@ -145,6 +156,49 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class NoteCard extends StatelessWidget {
+  const NoteCard({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width - 150;
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      height: 200,
+      width: w,
+      decoration: BoxDecoration(
+        color: bColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Column(children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Title",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          "lorem ipsum ashda  sdgtgrtgtr  ergegre ergege ergergre ergege ergeg  sdf ds fs fs f dsf sdf ds fs fsdsdsdsd sdfdsfsdf sdfdsfdsf sdfsfdsc sc dv dsc scs cs csc s cscvs csdscscscdv dvcdfvd dscdsv scsc dsvdsvs cscsvfsvfsv scsdvfsfv scsvdrfv scf ssvss  sdvdfvdfsces scscsfc sscscdscs",
+          style: TextStyle(
+            fontSize: 16,
+          ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 6,
+        ),
+      ]),
     );
   }
 }
