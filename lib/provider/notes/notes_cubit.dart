@@ -7,7 +7,19 @@ import '../../models/note.dart';
 part "./notes_states.dart";
 
 class NoteCubit extends Cubit<NoteState> {
-  NoteCubit() : super(DefaultNoteState());
+  List<Note>? notes;
+
+  NoteCubit() : super(DefaultNoteState()) {
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final ins = FirebaseFirestore.instance.collection(uid);
+    ins
+        .orderBy(
+          "created",
+          descending: true,
+        )
+        .get()
+        .then((value) => null);
+  }
 
   Note? currentNote;
 
@@ -25,7 +37,7 @@ class NoteCubit extends Cubit<NoteState> {
     }
   }
 
-  Future getNotes() async {
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getNotes() async {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final ins = FirebaseFirestore.instance.collection(uid);
     final query = await ins

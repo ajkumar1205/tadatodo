@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -5,42 +6,113 @@ import '../theme/colors.dart';
 import '../provider/auth/auth_cubit.dart';
 import '../provider/notes/notes_cubit.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  var drawer = false;
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<NoteCubit, NoteState>(
       listener: (context, state) {},
       builder: (context, state) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: appBar(context),
-          body: FutureBuilder(
-            future: BlocProvider.of<NoteCubit>(context).getNotes(),
-            builder: (context, snap) {
-              return ListView.builder(
-                itemCount: 1,
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      if (index % 2 == 1) const Expanded(child: SizedBox()),
-                      const NoteCard(),
-                      if (index % 2 == 0) const Expanded(child: SizedBox()),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-          floatingActionButtonLocation: FabLocation(context: context),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: pColor,
-            foregroundColor: white,
-            onPressed: () {
-              Navigator.of(context).pushNamed("/edit");
-            },
-            child: const Icon(Icons.add),
+        return GestureDetector(
+          onHorizontalDragDown: (_) {
+            drawer = true;
+            setState(() {});
+          },
+          onTapUp: (_) {
+            if (drawer) drawer = false;
+            setState(() {});
+          },
+          child: Scaffold(
+            body: Stack(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                ),
+                AnimatedPositioned(
+                  top: 0,
+                  left: drawer ? 60 : 0,
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  duration: const Duration(milliseconds: 200),
+                  child: Scaffold(
+                    extendBodyBehindAppBar: true,
+                    appBar: appBar(context),
+                    body: FutureBuilder(
+                      future: BlocProvider.of<NoteCubit>(context).getNotes(),
+                      builder: (context, snap) {
+                        return ListView.builder(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          itemCount: 1,
+                          itemBuilder: (context, index) {
+                            return Row(
+                              children: [
+                                if (index % 2 == 1)
+                                  const Expanded(child: SizedBox()),
+                                const NoteCard(),
+                                if (index % 2 == 0)
+                                  const Expanded(child: SizedBox()),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    floatingActionButtonLocation: FabLocation(context: context),
+                    floatingActionButton: FloatingActionButton(
+                      backgroundColor: pColor,
+                      foregroundColor: white,
+                      onPressed: () {
+                        Navigator.of(context).pushNamed("/edit");
+                      },
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                ),
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 200),
+                  width: 60,
+                  height: MediaQuery.of(context).size.height,
+                  left: drawer ? 0 : -60,
+                  top: 0,
+                  child: Container(
+                    color: bColor,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 30),
+                        IconButton(
+                          padding: const EdgeInsets.all(15),
+                          style: const ButtonStyle(
+                            shape: MaterialStatePropertyAll(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(18),
+                                  bottomLeft: Radius.circular(18),
+                                ),
+                              ),
+                            ),
+                            backgroundColor: MaterialStatePropertyAll(white),
+                          ),
+                          onPressed: () {},
+                          iconSize: 30,
+                          icon: const Icon(
+                            Icons.note_alt,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -48,6 +120,7 @@ class HomePage extends StatelessWidget {
   }
 
   Future<Widget?> openDialog(BuildContext context) {
+    final email = FirebaseAuth.instance.currentUser!.email!;
     return showDialog<Widget>(
       context: context,
       useRootNavigator: true,
@@ -66,18 +139,21 @@ class HomePage extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 10),
-                const CircleAvatar(
+                CircleAvatar(
                   backgroundColor: pColor,
                   foregroundColor: white,
                   radius: 50,
-                  child: Text("A", style: TextStyle(fontSize: 40)),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
                   child: Text(
-                    "ajthakur1205@gmail.com",
+                    email.toUpperCase().substring(0, 1),
+                    style: const TextStyle(fontSize: 40),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    email,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                 ),
                 Row(
